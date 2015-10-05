@@ -22,12 +22,12 @@ local position   = 0
 local mult       = 1
 local timeStamp  = 0
 local newStamp = 0
-local url = "http://ghostmodeling.com:5000"
+local url = "localhost:5000"
 
 
 function love.load( ) 
 
-	testJson = [[{ "task" :  "Bobbyjogggggggggggggggggggggggggggnes]]..love.math.random()..[["}]]
+	testJson = [[{ "task" :  "task ]]..love.math.random()..[["}]]
  	local b,c,h = utils.request(url.."/todos", 1, "post", testJson)
 	todosJson = utils.request(url.."/todos", .1)
 	if todosJson then
