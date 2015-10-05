@@ -59,7 +59,7 @@ function list:draw(  position, theme, fontManager )--postion = 0 to 1 --10 perce
 	end
 	for i,task in ipairs( self.tasks ) do
 		local x = self.x 
-		local y =(self.y + 65*(i-1))+(-position*listHeight) + self.h/4		
+		local y =(self.y + 65*(i-1))+(-position*listHeight) + self.h/8		
 		if  (y < self.y + self.h) and not(y + 45 < self.y) then
 			task:draw( x, y, self.w, 65, theme,fontManager )
 		end
@@ -67,17 +67,24 @@ function list:draw(  position, theme, fontManager )--postion = 0 to 1 --10 perce
 	love.graphics.setScissor()
 
 	love.graphics.setColor( theme:getPrimaryBase() )
-	love.graphics.rectangle("fill",self.x,self.y,self.w,self.h/4)
+	love.graphics.rectangle("fill",self.x,self.y,self.w,self.h/8)
 
 	love.graphics.setColor( theme:getSecondaryFallback() )
+
+	local fonts = theme:getMainFont()
+	local font = fontManager:getFont(fonts.regFont,30)
+	love.graphics.setFont(font)
+	love.graphics.print("Todos",self.w/40,self.h/16 - font:getHeight()/2)
+
+	love.graphics.setColor( theme:getSecondaryDark() )
+	love.graphics.circle( "fill", self.w/8*7 ,self.y + self.h/8, self.w/20 )
+
+
 	local fonts = theme:getMainFont()
 	local font = fontManager:getFont(fonts.regFont,60)
 	love.graphics.setFont(font)
-	love.graphics.print("Todos",self.w/40,self.h/8 - font:getHeight()/2)
-	love.graphics.setColor( theme:getSecondaryDark() )
-	love.graphics.circle( "fill", self.w/8*7 ,self.y + self.h/4, self.w/20 )
 	love.graphics.setColor( theme:getSecondaryFallback())
-	love.graphics.print("+", self.w/8*7 - font:getWidth("+")/2 + 1, self.y + self.h/4 - font:getHeight()/2 - 3) 
+	love.graphics.print("+", self.w/8*7 - font:getWidth("+")/2 + 1, self.y + self.h/8 - font:getHeight()/2 - 3) 
 
 end
 
