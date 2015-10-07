@@ -7,26 +7,57 @@ local utf8 = require "utf8"
 
 local utils = {}
 
-function utils.request( url, timeout, method, data ) --shorten request version for a RESTful api utilizing json
-	method = method or 'GET'
+function utils.request( url, method, timeout, data ) --shorten request version for a RESTful api utilizing json
+	method       = method or 'GET'
 	http.TIMEOUT = timeout or 0
+
 	if string.upper(method) == "GET" then
 		return http.request(url) 
-	elseif string.upper(method) == "POST" then
-		local t = {}
 
+	elseif string.upper(method) == "POST" then
+		local t      = {}
 		local source = ltn12.source.string(data)
-		local sink = ltn12.sink.table(t)
-		b,c,h = http.request({
-			url = url,
-			sink = sink,
-			method = "POST",
+		local sink   = ltn12.sink.table(t)
+		assert(data,"You need data for a"..method)
+
+		return http.request({
+			url     = url,
+			sink    = sink,
+			method  = "POST",
 			headers = { ["Content-Type"] = "application/json",
 					   ["Content-Length"] = string.len(data)  },
-			source = source
+			source  = source
 		})
-		return b,c,h
+	
+	elseif string.upper(method) == "DELETE" then
+		local t    = {}
+		local sink = ltn12.sink.table(t)
+
+		return http.request({
+			url     = url,
+			sink    = sink,
+			method  = "DELETE",
+			headers = { ["Content-Type"] = "application/json",
+					   ["Content-Length"] = string.len(data)  },
+		})
+
+	elseif string.upper(method)	== "PUT" then
+		local t      = {}
+		local source = ltn12.source.string(data)
+		local sink   = ltn12.sink.table(t)
+		assert(data,"You need data for a"..method)
+
+		return http.request({
+			url     = url,
+			sink    = sink,
+			method  = "PUT",
+			headers = { ["Content-Type"] = "application/json",
+					   ["Content-Length"] = string.len(data)  },
+			source  = source
+		})
+
 	end
+
 end
 
 function utils.limitString(str, font, width, ellipses, cut )-- ellipses is a bool for "...", cut teels function it is after its first cut. internal use only

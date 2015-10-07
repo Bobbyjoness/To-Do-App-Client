@@ -10,24 +10,59 @@ local gui         = class{}
 local fontManager = class{}
 
 function task:init( id, task )
-	self.id   = id
-	self.task = task
+	self.id     = id
+	self.task   = task
+	self.hover  = false 
+	self.x      = 0
+	self.y      = 0
+	self.width  = 0
+	self.height = 0
 end
 
 function task:setTask( task )
 	self.task = task
 end
 
-function task:draw( x, y, width, height, theme, fontManager )
+function task:update( dt )
+	local mousex,mousey = love.mouse.getPosition()
+	self.hover = false
+	if mousex > self.x and mousex < self.x + self.width and  mousey>self.y and mousey < self.y + self.height then
+		self.hover = true
+	end
+end
+
+function task:setPos( x,y )
+	self.x = x
+	self.y = y
+end
+
+function task:setSize( width, height )
+	self.width  = width
+	self.height = height
+end
+
+function task:draw( theme, fontManager )
 	love.graphics.setColor(theme:getPrimaryLight())
 	love.graphics.setLineWidth( 3 )
-	love.graphics.rectangle( 'line', math.floor(x),math.floor(y),width,height, 0, 0, 30 )
-	love.graphics.setColor(0,0,0,200)
+
+	local drawMode = 'line'
+	if self.hover then
+		drawMode = 'fill'
+	end
+		love.graphics.rectangle( drawMode, math.floor(self.x),math.floor(self.y),self.width,self.height, 0, 0, 30 )
+
+	if self.hover then
+		love.graphics.setColor(0,0,0,255)
+	else
+		love.graphics.setColor(0,0,0,200)
+	end
+
 	local fonts = theme:getMainFont()
 	local font = fontManager:getFont(fonts.regFont,12)
 	love.graphics.setFont(font)
-	love.graphics.printf( utils.limitString(self.task,font,width - 20/780*width,true ), x + 20/780*width, y + height/2 - font:getHeight()/2, width - 2*width/10, "left" )
-
+	love.graphics.printf( utils.limitString(self.task,font,self.width - 20/780*self.width,true ), self.x + 20/780*self.width,
+	 self.y + self.height/2 - font:getHeight()/2, self.width - 2*self.width/10, "left" )
+	self.hover = false
 end
 
 function task:getID()
@@ -40,12 +75,25 @@ function list:init(x,y,w,h) --h is height of view window
 	self.w = w
 	self.h = h
 	self.tasks = {}
+	self.buttonHover = false
 
 end
 
 function list:addTask(  task )
 	self.tasks[task:getID()] = task
 
+end
+
+function list:update( dt )
+	local mousex,mousey = love.mouse.getPosition()
+	self.buttonHover = false
+	if lume.distance( self.w/8*7, self.y + self.h/8, mousex, mousey) < (self.w/20) then
+		self.buttonHover = true
+	else	
+		for i,task in ipairs( self.tasks ) do
+			task:update(dt)
+		end
+	end
 end
 
 function list:draw(  position, theme, fontManager )--postion = 0 to 1 --10 percent padding all around
@@ -61,7 +109,9 @@ function list:draw(  position, theme, fontManager )--postion = 0 to 1 --10 perce
 		local x = self.x 
 		local y =(self.y + 65*(i-1))+(-position*listHeight) + self.h/8		
 		if  (y < self.y + self.h) and not(y + 45 < self.y) then
-			task:draw( x, y, self.w, 65, theme,fontManager )
+			task:setPos(x,y)
+			task:setSize(self.w,65)
+			task:draw(theme,fontManager )
 		end
 	end
 	love.graphics.setScissor()
@@ -74,11 +124,11 @@ function list:draw(  position, theme, fontManager )--postion = 0 to 1 --10 perce
 	local fonts = theme:getMainFont()
 	local font = fontManager:getFont(fonts.regFont,30)
 	love.graphics.setFont(font)
-	love.graphics.print("Todos",self.w/40,self.h/16 - font:getHeight()/2)
+	love.graphics.print("Todos  |"..#self.tasks.. " Todos left",self.w/40,self.h/16 - font:getHeight()/2)
 
-	love.graphics.setColor( theme:getSecondaryDark() )
+	local r,g,b = unpack(theme:getSecondaryDark())
+	love.graphics.setColor( r, g, b, (self.buttonHover and 255) or 230 )
 	love.graphics.circle( "fill", self.w/8*7 ,self.y + self.h/8, self.w/20 )
-
 
 	local fonts = theme:getMainFont()
 	local font = fontManager:getFont(fonts.regFont,60)
@@ -126,7 +176,7 @@ function theme:setSecondaryColors( fallback, base, dark ) --fallback, base, dark
 
 end
 
-function theme:getSecondaryFallback( )
+function theme:getSecondaryFallback(  )
 	return self.themeTable.secondaryFallback
 
 end
