@@ -2,36 +2,35 @@ local gui         = require 'gui'
 local theme       = require 'themes.defualt'
 local TodoAPI     = require 'APIs.Todo'
 
-local todos, todosJson
+local todos
+local todosJson
 local updateRate = 1/10
 local counter    = 0
 local timeStamp  = 0
 local newStamp   = 0
-local url        = "http://localhost:5000"
+local url        = "http://ghostmodeling.com:5000"--"http://localhost:5000"
 local fontManager = gui.fontManager()
 local api        = {} -- api namespace
 api.todo   = TodoAPI( url, 1)
 
-list = gui.list(0,0,400,600)
-List = {}
+local list = gui.list(0,0,400,600)
+local List = {}
 
 function List:init() -- run only once
-    
+
 end
 
 function List:enter(previous) -- run every time the state is entered
-	testJson = [[{ "task" :  "task ]]..love.math.random()..[["}]]
+	local testJson = [[{ "task" :  "task ]]..love.math.random()..[["}]]
 
  	local res = api.todo:addTodo( testJson )
 
  	todos, newStamp = api.todo:getTodos()
-
 end
 
 function List:update(dt)
-	if todos == nil then 
+	if todos == nil then
 		todos, newStamp = api.todo:getTodos()
-
 	end
 
 	counter = counter + dt
@@ -48,12 +47,15 @@ function List:update(dt)
 		end
 		timeStamp = newStamp
 	end
+
 	list:update()
 end
 
 function List:draw()
 	list:draw(0,theme,fontManager)
-	love.graphics.setColor({0,0,0})
+
+   -- DEBUG INFO
+	love.graphics.setColor(255, 0, 255)
 	love.graphics.setFont(love.graphics.newFont(12))
 	love.graphics.print(love.timer.getFPS())
 end
@@ -63,7 +65,7 @@ function List:keyreleased(key)
 end
 
 function List:mousereleased(x,y, mouse_btn)
-    
+
 end
 
 return List
