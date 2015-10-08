@@ -18,7 +18,7 @@ function utils.request( url, method, timeout, data ) --shorten request version f
 		local t      = {}
 		local source = ltn12.source.string(data)
 		local sink   = ltn12.sink.table(t)
-		assert(data,"You need data for a"..method)
+		assert(data,"You need data for a "..method)
 
 		return http.request({
 			url     = url,
@@ -45,7 +45,7 @@ function utils.request( url, method, timeout, data ) --shorten request version f
 		local t      = {}
 		local source = ltn12.source.string(data)
 		local sink   = ltn12.sink.table(t)
-		assert(data,"You need data for a"..method)
+		assert(data,"You need data for a "..method)
 
 		return http.request({
 			url     = url,
@@ -104,6 +104,7 @@ end
 function utils.modifyColor( color, mult) -- multiplies r,g,b by a mult
 	return {color[1]*mult,color[2]*mult,color[3]*mult,color[4]}
 end
+
 function utils.hexToColor(hex)
 	local color = tonumber(hex, 16)
 	local t = {}
