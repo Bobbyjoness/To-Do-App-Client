@@ -6,6 +6,7 @@ local Task  = class{}
 
 function Task:init( id, task )
 	self.id     = id
+	print(id)
 	self.task   = task
 	self.hover  = false
 	self.x      = 0
@@ -14,15 +15,20 @@ function Task:init( id, task )
 	self.height = 0
 end
 
+function Task:setClickFunction( clickFunction ) -- really need to design a proper GUI.
+	self.clickFunction = clickFunction
+end
+
 function Task:setTask( task )
 	self.task = task
 end
 
 function Task:update( dt )
 	local mousex,mousey = love.mouse.getPosition()
-	self.hover = false
 	if mousex > self.x and mousex < self.x + self.width and  mousey>self.y and mousey < self.y + self.height then
 		self.hover = true
+	else
+		self.hover = false
 	end
 end
 
@@ -57,11 +63,17 @@ function Task:draw( theme, fontManager )
 	love.graphics.setFont(font)
 	love.graphics.printf( utils.limitString(self.task,font,self.width - 20/780*self.width,true ), self.x + 20/780*self.width,
 	 self.y + self.height/2 - font:getHeight()/2, self.width - 2*self.width/10, "left" )
-	self.hover = false
 end
 
 function Task:getID()
 	return self.id
+end
+
+function Task:click( x, y, button )
+	--print(self.hover)
+	if self.hover then
+		self.clickFunction( self )
+	end
 end
 
 return Task

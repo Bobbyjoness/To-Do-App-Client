@@ -1,10 +1,11 @@
 local class = require "libs.hump.class"
 local lume  = require "libs.lume"
+
 local utils = require 'utils'
 
 local List  = class{}
 
-function List:init(x,y,w,h) --h is height of view window
+function List:init( x,y,w,h ) --h is height of view window
 	self.x = x
 	self.y = y
 	self.w = w
@@ -13,7 +14,11 @@ function List:init(x,y,w,h) --h is height of view window
 	self.buttonHover = false
 end
 
-function List:addTask(  task )
+function List:setNewTaskFunction( newTaskFunction ) --very awkward way of doing things :( Need to fix eventually  
+	self.newTaskFunction = newTaskFunction
+end
+
+function List:addTask( task )
 	self.tasks[task:getID()] = task
 end
 
@@ -68,6 +73,16 @@ function List:draw(  position, theme, fontManager )--postion = 0 to 1 --10 perce
 	love.graphics.setFont(font)
 	love.graphics.setColor( theme:getSecondaryFallback())
 	love.graphics.print("+", self.w/8*7 - font:getWidth("+")/2 + 1, self.y + self.h/8 - font:getHeight()/2 - 3)
+end
+
+function List:click( x, y, button )
+	if self.buttonHover then
+		self.newTaskFunction( self )
+	else
+		for i, task in ipairs(self.tasks) do
+			task:click( x, y, button )
+		end
+	end
 end
 
 return List

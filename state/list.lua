@@ -1,9 +1,10 @@
 local gui         = require 'gui'
 local theme       = require 'themes.defualt'
 local TodoAPI     = require 'APIs.Todo'
+local State       = require 'libs.hump.gamestate'
 
 local todos, todosJson
-local updateRate = 1/60
+local updateRate = 1/3
 local counter    = 0
 local timeStamp  = 0
 local newStamp   = 0
@@ -59,6 +60,7 @@ function List:update(dt)
 	if newStamp > timeStamp then
 		for i, task in ipairs( todos ) do
 			local _task = gui.task(i,task.task)
+			_task:setClickFunction(function(self) print(self.id) end)
 			list:addTask(_task)
 		end
 		timeStamp = newStamp
@@ -78,7 +80,7 @@ function List:keyreleased(key)
 end
 
 function List:mousereleased(x,y, mouse_btn)
-    
+    list:click()
 end
 
 return List
