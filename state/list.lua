@@ -3,14 +3,15 @@ local theme       = require 'themes.defualt'
 local TodoAPI     = require 'APIs.Todo'
 
 local todos, todosJson
-local updateRate = 1/10
+local updateRate = 1/60
 local counter    = 0
 local timeStamp  = 0
 local newStamp   = 0
 local url        = "http://localhost:5000"
 local fontManager = gui.fontManager()
 local api        = {} -- api namespace
-api.todo   = TodoAPI( url, 1)
+local nextTodo   = false
+api.todo   = TodoAPI( url, 60)
 
 list = gui.list(0,0,400,600)
 List = {}
@@ -27,24 +28,30 @@ function List:enter(previous) -- run every time the state is entered
  	api.todo:getTodos(function (xtodos, xtimeStamp)
 	 		todos = xtodos
 	 		newStamp = xtimeStamp
+	 		nextTodo = true
+
  		end)
 
 end
 
 function List:update(dt)
-	if todos == nil then 
+	if todos == nil and nextTodo then 
+		nextTodo = false
 		api.todo:getTodos(function (xtodos, xtimeStamp)
 	 		todos = xtodos
 	 		newStamp = xtimeStamp
+	 		nextTodo = true
  		end)
 
 	end
 
 	counter = counter + dt
-	if counter >= updateRate then
+	if counter >= updateRate and nextTodo then
+		nextTodo = false
 		api.todo:getTodos(function (xtodos, xtimeStamp)
 	 		todos = xtodos
 	 		newStamp = xtimeStamp
+	 		nextTodo = true
  		end)
 		counter = 0
 	end
