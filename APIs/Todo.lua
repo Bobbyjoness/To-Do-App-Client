@@ -1,7 +1,7 @@
 --3rd-party libs
 local class = require 'libs.hump.class'
 local json  = require 'libs.dkjson'
-local async = require 'libs.async'
+local async = require 'libs.async' 
 
 --my code
 local utils = require 'utils'
@@ -26,20 +26,21 @@ function Todo:init( url, timeout )
 	end )
 
 	self._getTodo = async.define( "_getTodo", function ( url, timeout, id )
+		print(url,timeout,id)
 		local utils = require 'utils'
-		local b, c = utils.request( url.."/todos/"..id, "GET", timeout )
+		local b, c = utils.request( url.."/todos/todo"..id, "GET", timeout )
 		return b, c
 	end )
 
 	self._deleteTodo = async.define( "_deleteTodo", function ( url, timeout, id )
 		local utils = require 'utils'
-		local b, c = utils.request(self.url.."/todos/"..id, "DELETE", self.timeout )
+		local b, c = utils.request(self.url.."/todos/todo"..id, "DELETE", self.timeout )
 		return b, c
 	end )
 
  	self._updateTodo = async.define( "_updateTodo", function ( url,timeout,todo )
 		local utils = require 'utils'
-		local b, c = utils.request(self.url.."/todos/"..id, "PUT", self.timeout, todo)
+		local b, c = utils.request(self.url.."/todos/todo"..id, "PUT", self.timeout, todo)
 		return b, c
 	end )
 
@@ -87,6 +88,7 @@ function Todo:addTodo( todo, callback )       -- POST method on /todos
 end
 
 function Todo:getTodo( id, callback )    -- GET method on /todos/<id>
+	print(id)
 	self._getTodo({
 		success = function (todosJson, c)
 			if todosJson then
