@@ -4,7 +4,7 @@ local lume        = require 'libs.lume'
 local json        = require 'libs.dkjson'
 local tserial     = require 'libs.tserial'
 local State       = require 'libs.hump.gamestate'
-local async       = require 'libs.async'
+local async       = require 'libs.async' 
 
 --libs setup
 async.load()

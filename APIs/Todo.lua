@@ -26,7 +26,6 @@ function Todo:init( url, timeout )
 	end )
 
 	self._getTodo = async.define( "_getTodo", function ( url, timeout, id )
-		print(url,timeout,id)
 		local utils = require 'utils'
 		local b, c = utils.request( url.."/todos/todo"..id, "GET", timeout )
 		return b, c
@@ -88,7 +87,6 @@ function Todo:addTodo( todo, callback )       -- POST method on /todos
 end
 
 function Todo:getTodo( id, callback )    -- GET method on /todos/<id>
-	print(id)
 	self._getTodo({
 		success = function (todosJson, c)
 			if todosJson then
@@ -99,7 +97,7 @@ function Todo:getTodo( id, callback )    -- GET method on /todos/<id>
 				else
 					local timeStamp = utils.makeTimeStamp(todos[#todos].lastUpdated)
 					todos[#todos] = nil
-					callback(todos, timeStamp)
+					callback(todos[1], timeStamp)
 				end
 			else
 				print( "Error:", todosJson, c )

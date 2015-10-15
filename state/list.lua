@@ -14,14 +14,14 @@ local api        = {} -- api namespace
 local nextTodo   = false
 api.todo   = TodoAPI( url, 60)
 
-list = gui.list(0,0,400,600)
-List = {}
+local list = gui.list(0,0,400,600)
+local List = {}
 
 function List:init() -- run only once
     
 end
 
-function List:enter(previous) -- run every time the state is entered
+function List:enter( previous, ... ) -- run every time the state is entered
 	testJson = [[{ "task" :  "task ]]..love.math.random()..[["}]]
 
  	api.todo:addTodo( testJson,function() end )
@@ -60,7 +60,7 @@ function List:update(dt)
 	if newStamp > timeStamp then
 		for i, task in ipairs( todos ) do
 			local _task = gui.task(i,task.task)
-			_task:setClickFunction(function(self) print(self.id) end)
+			_task:setClickFunction(function(self) State.switch( require("state.task"), self.id) end)
 			list:addTask(_task)
 		end
 		timeStamp = newStamp
