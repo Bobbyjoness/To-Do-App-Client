@@ -16,6 +16,9 @@ api.todo   = TodoAPI( url, 60)
 
 local TaskState = {}
 local taskID
+
+local deleteIcon
+
 function TaskState:init()
 
 end
@@ -26,6 +29,7 @@ function TaskState:enter( previous, xtaskID, ... )
 	 		todo = xtodo
 	 		newStamp = timeStamp
  		end)
+	deleteIcon = love.graphics.newImage("assets/icons/png/delete96.png")
 end
 
 function TaskState:update()
@@ -42,6 +46,8 @@ function TaskState:draw( )
 	local fonts = theme:getMainFont()
 	local font = fontManager:getFont(fonts.regFont,30)
 	love.graphics.setFont(font)
-	love.graphics.print("Todo "..taskID,w/40,h/16 - font:getHeight()/2)
+	love.graphics.print("Todo "..(taskID or 0),w/40,h/16 - font:getHeight()/2)
+	love.graphics.setColor( 255,255,255, 127 )
+	love.graphics.draw(deleteIcon, (w/40*20) ,(h/16 - deleteIcon:getHeight()/2),0,.5,.5)
 end
 return TaskState
